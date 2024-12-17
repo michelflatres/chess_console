@@ -40,12 +40,12 @@ bool isMoveValid(Chess::Position present, Chess::Position future, Chess::EnPassa
         // Check if the opponent's last move was a two-square pawn move
         if (toupper(lastMovedPiece) == 'P' && abs(LastMoveTo.iRow - LastMoveFrom.iRow) == 2 &&
             abs(LastMoveFrom.iColumn - present.iColumn) == 1) {
-            cout << "En passant move detected and valid.\n";
             // Apply en passant capture
             S_enPassant->bApplied = true;
             S_enPassant->PawnCaptured.iRow = LastMoveTo.iRow;
             S_enPassant->PawnCaptured.iColumn = LastMoveTo.iColumn;
             bValid = true;
+            cout << "En passant move!\n";
             return bValid; // Exit after en passant
         }
     }
@@ -54,13 +54,11 @@ bool isMoveValid(Chess::Position present, Chess::Position future, Chess::EnPassa
     if (1 == abs(future.iColumn - present.iColumn)) {
         if ((Chess::isWhitePiece(chPiece) && future.iRow == present.iRow + 1) ||
             (Chess::isBlackPiece(chPiece) && future.iRow == present.iRow - 1)) {
-            char targetPiece = current_game->getPieceAtPosition(future.iRow, future.iColumn);
-            cout << "Target square content: " << targetPiece << " (expected opponent's piece).\n";
-
-            if (EMPTY_SQUARE != targetPiece) {
-                
-                bValid = true;
-            } else {
+            if (EMPTY_SQUARE != current_game->getPieceAtPosition(future.iRow, future.iColumn))
+               {
+                  bValid = true;
+                  cout << "Pawn captured a piece!\n";
+               } else {
                 return false;
             }
         } else {
@@ -97,7 +95,13 @@ bool isMoveValid(Chess::Position present, Chess::Position future, Chess::EnPassa
         else {
             return false;
         }
-    }    
+    }  // If a pawn reaches its eight rank, it must be promoted to another piece
+         if ( (Chess::isWhitePiece( chPiece ) && 7 == future.iRow) ||
+              (Chess::isBlackPiece( chPiece ) && 0 == future.iRow) )
+         {
+            cout << "Pawn must be promoted!\n";
+            S_promotion->bApplied = true;
+         }   
 }
 break;
       case 'R':
